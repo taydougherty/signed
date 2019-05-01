@@ -82,4 +82,26 @@ var userTop50 = function () {
         // when done, receive result 
         // artist[result.name] = {"id": ..., "followers": ...}
     })
-} 
+}
+
+function musicBrainzAPI() {
+    var search = "Pink Floyd"
+    var queryURL = "https://musicbrainz.org/ws/2/artist?query=" + search + "&fmt=json"
+    $.ajax({
+        url: queryURL,
+        method: "GET"
+    })
+        .then(function (response) {
+            MBID = response.artists[0].id
+            queryURL = "http://musicbrainz.org/ws/2/artist/" + MBID + "?inc=label-rels&fmt=json"
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            })
+                .then(function (response) {
+                    var label = response.relations[0].label.name
+                    console.log(label)
+                })
+        })
+}
+musicBrainzAPI()
