@@ -72,12 +72,12 @@ var artist = {
 
 // Initialize Firebase
 var config = {
-    apiKey: "AIzaSyDCUBY69qfLyOGhu8ThOcNAyi1DJPCN378",
-    authDomain: "signed-1d025.firebaseapp.com",
-    databaseURL: "https://signed-1d025.firebaseio.com",
-    projectId: "signed-1d025",
-    storageBucket: "signed-1d025.appspot.com",
-    messagingSenderId: "686756480958"
+  apiKey: "AIzaSyBGEi2FNlzHCBjl6Oit1qTAjPQ7oKSTER0",
+  authDomain: "project-1-930f6.firebaseapp.com",
+  databaseURL: "https://project-1-930f6.firebaseio.com",
+  projectId: "project-1-930f6",
+  storageBucket: "project-1-930f6.appspot.com",
+  messagingSenderId: "772881617679"
 };
 firebase.initializeApp(config);
 
@@ -143,10 +143,41 @@ function musicBrainzAPI() {
 }
 musicBrainzAPI()
 
-$(document).ready(function {
-    $("#login").on("click", function () {
-        var provider = new firebase.auth.GoogleAuthProvider();
+function googleSignin() {
+  firebase.auth()
+  var provider = new firebase.auth.GoogleAuthProvider();
+  
+  firebase.auth().signInWithPopup(provider).then(function(result) {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      var token = result.credential.accessToken;
+      // The signed-in user info.
+      var user = result.user;
+      // ...
+      console.log(token)
+      console.log(user)
+    }).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // The email of the user's account used.
+      console.log(errorCode)
+      console.log(errorMessage)
     });
+
+}
+
+function googleSignout() {
+    firebase.auth().signOut()
+    
+    .then(function() {
+      console.log('Signout Succesfull')
+    }, function(error) {
+      console.log('Signout Failed')  
+    });
+}
+
+$(document).ready(function() {
+  
 
 
 
