@@ -70,6 +70,16 @@ var countryPlaylist = {
 var artist = {
 }
 
+// Initialize Firebase
+var config = {
+    apiKey: "AIzaSyDCUBY69qfLyOGhu8ThOcNAyi1DJPCN378",
+    authDomain: "signed-1d025.firebaseapp.com",
+    databaseURL: "https://signed-1d025.firebaseio.com",
+    projectId: "signed-1d025",
+    storageBucket: "signed-1d025.appspot.com",
+    messagingSenderId: "686756480958"
+};
+firebase.initializeApp(config);
 
 var userTop50 = function() {
     $.ajax({
@@ -83,3 +93,11 @@ var userTop50 = function() {
         // artist[result.name] = {"id": ..., "followers": ...}
     })
 }
+
+$(document).ready(function {
+    $("#login").on("click", function(){
+        var provider = new firebase.auth.GoogleAuthProvider();
+    });
+});
+
+
