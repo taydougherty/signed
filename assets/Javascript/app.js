@@ -1,3 +1,5 @@
+$(document).ready(function() {
+
 var countryPlaylist = {
     "Argentina": "37i9dQZEVXbMMy2roB9myp",
     "Australia": "37i9dQZEVXbJPcfkRz0wJ0",
@@ -65,21 +67,82 @@ var countryPlaylist = {
     // "Cyprus": "",
     // "Liechtenstein": "",
     // "Monaco": "",
-}
+};
 
 var artist = {
+};
+
+var playlistURL = "https://api.spotify.com/v1/playlists/37i9dQZEVXbLRQDuF5jeBp";
+
+// find hash of url
+var hash = window.location.hash
+.substring(1)
+.split('&')
+.reduce(function (initial, item) {
+  if (item) {
+    var parts = item.split('=');
+    initial[parts[0]] = decodeURIComponent(parts[1]);
+  }
+  return initial;
+}, {});
+window.location.hash = '';
+
+// Set token
+var accessToken = hash.access_token;
+
+var authorizedURL = 'https://accounts.spotify.com/authorize';
+
+// Replace with your app's client ID and redirect URI
+var clientId = 'ce01ac1e69164952b0ee29ea90b860b6';
+var redirectUri = 'https://luvkylo.github.io/signed/';
+
+// If there is no token, redirect to Spotify authorization
+if (!accessToken) {
+  window.location = authorizedURL + "?client_id=" + clientId + "&redirect_uri=" + redirectUri + "&response_type=token";
 }
 
-
-var userTop50 = function() {
+// var userTop50 = function() {
     $.ajax({
-        url: 'https://api.spotify.com/v1/' 
-    })
+        url: playlistURL,
+        method: "GET",
+        headers: {
+            'Authorization': 'Bearer ' + accessToken
+        },
+        success: function(data) {
+            console.log(data)
+        }
+     });
+    });
+    //     $.each(data.artist, function(item, index) {
+    //         var name = item;
+    //         // do an ajax call to spotify to get the info on the artist
+    //         // when done, receive result 
+    //         // artist[result.name] = {"id": ..., "followers": ...}
+    //     });
+    // };
 
-    $.each(data.artist, function(item, index) {
-        var name = item;
-        // do an ajax call to spotify to get the info on the artist
-        // when done, receive result 
-        // artist[result.name] = {"id": ..., "followers": ...}
-    })
-}
+// var AUTHORIZATION_URL = "https://accounts.spotify.com/authorize?client_id=ce01ac1e69164952b0ee29ea90b860b6&redirect_uri=https://luvkylo.github.io/signed/&response_type=token";
+
+// var accessToken = window.location.hash.substr(1).split('&')[0].split("=")[1]
+//     if (accessToken) {
+//     window.opener.spotifyCallback(accessToken)
+// }
+
+// var popup = window.open(
+//     AUTHORIZATION_URL,
+//     'Login with Spotify',
+//     'width=800,height=600'
+// );
+
+// window.spotifyCallback = (accessToken) => {
+//     popup.close()
+//     $.ajax({
+//         url: playlistURL,
+//         method: "GET",
+//         headers: {
+//             'Authorization': 'Bearer ' + accessToken
+//         }.then(function(response) {
+//         console.log(response)
+//     })
+// })
+// };
