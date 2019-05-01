@@ -81,12 +81,12 @@ var config = {
 };
 firebase.initializeApp(config);
 
-var userTop50 = function() {
+var userTop50 = function () {
     $.ajax({
-        url: 'https://api.spotify.com/v1/' 
+        url: 'https://api.spotify.com/v1/'
     })
 
-    $.each(data.artist, function(item, index) {
+    $.each(data.artist, function (item, index) {
         var name = item;
         // do an ajax call to spotify to get the info on the artist
         // when done, receive result 
@@ -94,8 +94,29 @@ var userTop50 = function() {
     })
 }
 
+function musicBrainzAPI() {
+    var search = "Pink Floyd"
+    var queryURL = "https://musicbrainz.org/ws/2/artist?query=" + search + "&fmt=json"
+    $.ajax({
+        url: queryURL,
+        method: "GET"
+    })
+        .then(function (response) {
+            MBID = response.artists[0].id
+            queryURL = "http://musicbrainz.org/ws/2/artist/" + MBID + "?inc=label-rels&fmt=json"
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            })
+                .then(function (response) {
+                    var label = response.relations[0].label.name
+                    console.log(label)
+                })
+        })
+}
+musicBrainzAPI()
 $(document).ready(function {
-    $("#login").on("click", function(){
+    $("#login").on("click", function () {
         var provider = new firebase.auth.GoogleAuthProvider();
     });
 });
