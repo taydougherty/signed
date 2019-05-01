@@ -71,15 +71,15 @@ var artist = {
 }
 
 
-var userTop50 = function() {
+var userTop50 = function () {
     $.ajax({
-        url: 'https://api.spotify.com/v1/' 
+        url: 'https://api.spotify.com/v1/'
     })
 
-    $.each(data.artist, function(item, index) {
+    $.each(data.artist, function (item, index) {
         var name = item;
         // do an ajax call to spotify to get the info on the artist
         // when done, receive result 
         // artist[result.name] = {"id": ..., "followers": ...}
     })
-}
+} 
