@@ -80,26 +80,6 @@ var config = {
   messagingSenderId: "772881617679"
 };
 
-// navigator.geolocation.getCurrentPosition(function(position) {
-
-//     var lat = position.coords.latitude;
-//     var long = position.coords.longitude;
-
-//     console.log("i'm tracking you!");
-//     console.log(lat);
-//     console.log(long);
-//   },
-//   function(error) {
-//     if (error.code == error.PERMISSION_DENIED){
-//       console.log("you denied me :-(");}
-//     else if (error.code == error.POSITION_UNAVAILABLE){
-//       console.log("don't know where :-(");}
-//     else if (error.code == error.TIMEOUT){
-//       console.log("timed out :-(");}
-//     else if (error.code == error.UNKNOWN_ERROR){
-//       console.log("mystery :-(");}
-//   });
-
 navigator.geolocation.getCurrentPosition(function(position) {
 
 var lat = position.coords.latitude;
@@ -230,10 +210,6 @@ function googleSignout() {
 }
 
 $(document).ready(function() {
-  
-
-
-
 
     // change all population related variable name into singer related name.
 
@@ -278,5 +254,3 @@ $(document).ready(function() {
     // }
 
 })
-
-
