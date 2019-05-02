@@ -79,6 +79,36 @@ var config = {
   storageBucket: "project-1-930f6.appspot.com",
   messagingSenderId: "772881617679"
 };
+
+navigator.geolocation.getCurrentPosition(function(position) {
+
+var lat = position.coords.latitude;
+var long = position.coords.longitude;
+
+var latFix = lat.toFixed(2);
+var longFix = long.toFixed(2);
+
+console.log(latFix);
+console.log(longFix);
+
+// concatenate key and long/lat as string into GET URL
+var queryURL = "https://secure.geonames.org/findNearbyJSON?lat=" + latFix + "&lng=" + longFix + "&username=demo"
+console.log(queryURL);
+// Ajax call to API
+    $.ajax({
+      url: queryURL,
+      method: "GET"
+    }).then(function(response) {
+    
+    var countryName = response.geonames[0].countryName;
+
+	console.log(countryName);
+    });
+
+})
+  
+
+
 firebase.initializeApp(config);
 
 var userTop50 = function () {
@@ -143,6 +173,9 @@ function musicBrainzAPI() {
 }
 musicBrainzAPI()
 
+$(document).ready(function (){
+    $("#login").on("click", function () {
+        var provider = new firebase.auth.GoogleAuthProvider();
 function googleSignin() {
   firebase.auth()
   var provider = new firebase.auth.GoogleAuthProvider();
@@ -177,10 +210,6 @@ function googleSignout() {
 }
 
 $(document).ready(function() {
-  
-
-
-
 
     // change all population related variable name into singer related name.
 
@@ -223,6 +252,5 @@ $(document).ready(function() {
     //         return a.id !== b.id;
     //     })).attr('class', 'names').attr('d', path);
     // }
-});
 
-
+})
