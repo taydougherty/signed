@@ -79,6 +79,56 @@ var config = {
     storageBucket: "signed-1d025.appspot.com",
     messagingSenderId: "686756480958"
 };
+
+// navigator.geolocation.getCurrentPosition(function(position) {
+
+//     var lat = position.coords.latitude;
+//     var long = position.coords.longitude;
+
+//     console.log("i'm tracking you!");
+//     console.log(lat);
+//     console.log(long);
+//   },
+//   function(error) {
+//     if (error.code == error.PERMISSION_DENIED){
+//       console.log("you denied me :-(");}
+//     else if (error.code == error.POSITION_UNAVAILABLE){
+//       console.log("don't know where :-(");}
+//     else if (error.code == error.TIMEOUT){
+//       console.log("timed out :-(");}
+//     else if (error.code == error.UNKNOWN_ERROR){
+//       console.log("mystery :-(");}
+//   });
+
+navigator.geolocation.getCurrentPosition(function(position) {
+
+var lat = position.coords.latitude;
+var long = position.coords.longitude;
+
+var latFix = lat.toFixed(2);
+var longFix = long.toFixed(2);
+
+console.log(latFix);
+console.log(longFix);
+
+// concatenate key and long/lat as string into GET URL
+var queryURL = "https://secure.geonames.org/findNearbyJSON?lat=" + latFix + "&lng=" + longFix + "&username=demo"
+console.log(queryURL);
+// Ajax call to API
+    $.ajax({
+      url: queryURL,
+      method: "GET"
+    }).then(function(response) {
+    
+    var countryName = response.geonames[0].countryName;
+
+	console.log(countryName);
+    });
+
+})
+  
+
+
 firebase.initializeApp(config);
 
 var userTop50 = function () {
@@ -143,7 +193,7 @@ function musicBrainzAPI() {
 }
 musicBrainzAPI()
 
-$(document).ready(function {
+$(document).ready(function (){
     $("#login").on("click", function () {
         var provider = new firebase.auth.GoogleAuthProvider();
     });
@@ -192,6 +242,7 @@ $(document).ready(function {
     //         return a.id !== b.id;
     //     })).attr('class', 'names').attr('d', path);
     // }
-});
+
+})
 
 
