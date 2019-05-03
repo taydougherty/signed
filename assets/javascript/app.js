@@ -70,7 +70,7 @@ var countryPlaylist = {
 
 var artist = {}
 
-var countryName = "";
+var countryName = "United States";
 var label = "";
 
 // Initialize Firebase
