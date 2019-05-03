@@ -224,6 +224,10 @@ function googleSignin() {
         console.log(errorMessage);
     });
 
+    $(".signin").addClass("invisible");
+    $(".signout").removeClass("invisible");
+    $("fav").removeClass("invisible");
+
 }
 
 // when the signout button is pressed
@@ -235,6 +239,9 @@ function googleSignout() {
     }, function(error) {
     console.log('Signout Failed');
     });
+    $(".signin").removeClass("invisible");
+    $(".signout").addClass("invisible");
+    $("fav").addClass("invisible");
 }
 
 // ---------------------------------------- load web --------------------------------------------
