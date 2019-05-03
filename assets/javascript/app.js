@@ -202,45 +202,45 @@ navigator.geolocation.getCurrentPosition(function(position) {
 
 })
 
+// when the sign in button is pressed
+function googleSignin() {
+    firebase.auth();
+    var provider = new firebase.auth.GoogleAuthProvider();
+
+    firebase.auth().signInWithPopup(provider).then(function(result) {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        var token = result.credential.accessToken;
+        // The signed-in user info.
+        var user = result.user;
+        // ...
+        console.log(token);
+        console.log(user);
+    }).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        console.log(errorCode);
+        console.log(errorMessage);
+    });
+
+}
+
+// when the signout button is pressed
+function googleSignout() {
+    firebase.auth().signOut()
+    
+    .then(function() {
+    console.log('Signout Succesfull');
+    }, function(error) {
+    console.log('Signout Failed');
+    });
+}
 
 // ---------------------------------------- load web --------------------------------------------
 
 $(document).ready(function() {
 
-    // when the sign in button is pressed
-    function googleSignin() {
-        firebase.auth();
-        var provider = new firebase.auth.GoogleAuthProvider();
-
-        firebase.auth().signInWithPopup(provider).then(function(result) {
-            // This gives you a Google Access Token. You can use it to access the Google API.
-            var token = result.credential.accessToken;
-            // The signed-in user info.
-            var user = result.user;
-            // ...
-            console.log(token);
-            console.log(user);
-        }).catch(function(error) {
-            // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            // The email of the user's account used.
-            console.log(errorCode);
-            console.log(errorMessage);
-        });
-
-    }
-
-    // when the signout button is pressed
-    function googleSignout() {
-        firebase.auth().signOut()
-        
-        .then(function() {
-        console.log('Signout Succesfull');
-        }, function(error) {
-        console.log('Signout Failed');
-        });
-    }
 
     // --------------------- add table of centent to the main display ----------------------------------
 
