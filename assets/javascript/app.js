@@ -225,7 +225,7 @@ function googleSignin() {
                     usersRef.child(user.uid).set({ 
                         displayName: user.displayName,
                         email: user.email,
-                        favorite: []
+                        favorite: ""
                     });
                 }
             });
