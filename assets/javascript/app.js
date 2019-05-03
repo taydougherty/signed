@@ -83,7 +83,7 @@ var config = {
   messagingSenderId: "772881617679"
 };
 
-var user = "";
+var userEmail = "";
 
 firebase.initializeApp(config);
 var usersRef = firebase.database().ref("users");
@@ -218,9 +218,10 @@ function googleSignin() {
         // ...
 
         if (user) {
+            userEmail = user.email
             usersRef.child(user).set({ 
-                displayName: displayName,
-                email: email,
+                displayName: user.displayName,
+                email: user.email,
             });
         }
     }).catch(function(error) {
