@@ -123,10 +123,6 @@ function musicBrainzAPI(name) {
     });
 }
 
-
-
-
-
 var playlistURL = "https://api.spotify.com/v1/playlists/37i9dQZEVXbLRQDuF5jeBp";
 
 // Find hash of URL
@@ -209,14 +205,12 @@ navigator.geolocation.getCurrentPosition(function(position) {
 
 // ---------------------------------------- load web --------------------------------------------
 
-$(document).ready(function() {
-    var provider = new firebase.auth.GoogleAuthProvider();
-    
+
     // when the sign in button is pressed
-    function googleSignin() {
+    $(".googleSignIn").on("click", function() {
         firebase.auth();
         var provider = new firebase.auth.GoogleAuthProvider();
-    
+
         firebase.auth().signInWithPopup(provider).then(function(result) {
             // This gives you a Google Access Token. You can use it to access the Google API.
             var token = result.credential.accessToken;
@@ -234,11 +228,12 @@ $(document).ready(function() {
             console.log(errorMessage);
         });
 
-    }
+    });
 
     // when the signout button is pressed
     function googleSignout() {
         firebase.auth().signOut()
+        
         .then(function() {
         console.log('Signout Succesfull');
         }, function(error) {
@@ -246,6 +241,7 @@ $(document).ready(function() {
         });
     }
 
+$(document).ready(function() {
     // --------------------- add table of centent to the main display ----------------------------------
 
 
