@@ -219,6 +219,7 @@ function googleSignin() {
 
         var usersRef = firebase.database().ref("users");
         if (user) {
+            console.log(user.uid);
             usersRef.child(user.uid).set({ 
                 displayName: user.displayName,
                 email: user.email
