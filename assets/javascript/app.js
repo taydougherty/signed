@@ -86,7 +86,7 @@ var config = {
 var userEmail = "";
 
 firebase.initializeApp(config);
-var usersRef = firebase.database().ref("users");
+var database = firebase.database();
 
 // --------------------------------------------- Functions --------------------------------------------------
 var userTop50 = function () {
@@ -212,16 +212,16 @@ function googleSignin() {
 
     firebase.auth().signInWithPopup(provider).then(function(result) {
         // This gives you a Google Access Token. You can use it to access the Google API.
-        var token = result.credential.accessToken;
+        // var token = result.credential.accessToken;
         // The signed-in user info.
         var user = result.user;
         // ...
 
+        var usersRef = firebase.database().ref("users");
         if (user) {
-            userEmail = user.email
-            usersRef.child(user).set({ 
+            usersRef.child(user.uid).set({ 
                 displayName: user.displayName,
-                email: user.email,
+                email: user.email
             });
         }
     }).catch(function(error) {
