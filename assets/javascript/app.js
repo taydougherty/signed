@@ -73,8 +73,6 @@ var artist = {};
 var countryName = "United States";
 var label = "";
 
-var provider = new firebase.auth.GoogleAuthProvider();
-
 // Initialize Firebase
 var config = {
   apiKey: "AIzaSyBGEi2FNlzHCBjl6Oit1qTAjPQ7oKSTER0",
@@ -212,6 +210,8 @@ navigator.geolocation.getCurrentPosition(function(position) {
 // ---------------------------------------- load web --------------------------------------------
 
 $(document).ready(function() {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    
     // when the sign in button is pressed
     function googleSignin() {
         firebase.auth();
@@ -245,7 +245,7 @@ $(document).ready(function() {
         console.log('Signout Failed');
         });
     }
-});
+
     // --------------------- add table of centent to the main display ----------------------------------
 
 
@@ -322,3 +322,5 @@ $(document).ready(function() {
     //         return a.id !== b.id;
     //     })).attr('class', 'names').attr('d', path);
     // }
+
+});
