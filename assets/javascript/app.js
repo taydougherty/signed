@@ -83,7 +83,10 @@ var config = {
   messagingSenderId: "772881617679"
 };
 
+var userEmail = "";
+
 firebase.initializeApp(config);
+var usersRef = firebase.database().ref("users");
 
 // --------------------------------------------- Functions --------------------------------------------------
 var userTop50 = function () {
@@ -213,8 +216,14 @@ function googleSignin() {
         // The signed-in user info.
         var user = result.user;
         // ...
-        console.log(token);
-        console.log(user);
+
+        if (user) {
+            userEmail = user.email
+            usersRef.child(user).set({ 
+                displayName: user.displayName,
+                email: user.email,
+            });
+        }
     }).catch(function(error) {
         // Handle Errors here.
         var errorCode = error.code;
