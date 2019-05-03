@@ -1,3 +1,4 @@
+// ------------------------------------------- Variables declarations --------------------------------------------
 var countryPlaylist = {
     "Argentina": "37i9dQZEVXbMMy2roB9myp",
     "Australia": "37i9dQZEVXbJPcfkRz0wJ0",
@@ -67,8 +68,10 @@ var countryPlaylist = {
     // "Monaco": "",
 }
 
-var artist = {
-}
+var artist = {}
+
+var countryName = "";
+var label = "";
 
 // Initialize Firebase
 var config = {
@@ -80,37 +83,9 @@ var config = {
   messagingSenderId: "772881617679"
 };
 
-navigator.geolocation.getCurrentPosition(function(position) {
-
-var lat = position.coords.latitude;
-var long = position.coords.longitude;
-
-var latFix = lat.toFixed(2);
-var longFix = long.toFixed(2);
-
-console.log(latFix);
-console.log(longFix);
-
-// concatenate key and long/lat as string into GET URL
-var queryURL = "https://secure.geonames.org/findNearbyJSON?lat=" + latFix + "&lng=" + longFix + "&username=demo"
-console.log(queryURL);
-// Ajax call to API
-    $.ajax({
-      url: queryURL,
-      method: "GET"
-    }).then(function(response) {
-    
-    var countryName = response.geonames[0].countryName;
-
-	console.log(countryName);
-    });
-
-})
-  
-
-
 firebase.initializeApp(config);
 
+// --------------------------------------------- Functions --------------------------------------------------
 var userTop50 = function () {
     $.ajax({
         url: 'https://api.spotify.com/v1/'
@@ -123,6 +98,61 @@ var userTop50 = function () {
         // artist[result.name] = {"id": ..., "followers": ...}
     })
 }
+
+// Function that get label name
+function musicBrainzAPI(name) {
+    var search = name
+    var queryURL = "https://musicbrainz.org/ws/2/artist?query=" + search + "&fmt=json"
+
+    $.ajax({
+        url: queryURL,
+        method: "GET"
+    })
+    .then(function (response) {
+        MBID = response.artists[0].id
+        queryURL = "http://musicbrainz.org/ws/2/artist/" + MBID + "?inc=label-rels&fmt=json"
+
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        })
+        .then(function (response) {
+            label = response.relations[0].label.name
+            console.log(label)
+        });
+    });
+}
+
+// ---------------------------------------- operations prior web loading ----------------------------------------------
+
+// get Geo location and country name
+navigator.geolocation.getCurrentPosition(function(position) {
+
+    var lat = position.coords.latitude;
+    var long = position.coords.longitude;
+
+    var latFix = lat.toFixed(2);
+    var longFix = long.toFixed(2);
+
+    console.log(latFix);
+    console.log(longFix);
+
+    // concatenate key and long/lat as string into GET URL
+    var queryURL = "https://secure.geonames.org/findNearbyJSON?lat=" + latFix + "&lng=" + longFix + "&username=demo"
+    console.log(queryURL);
+
+    // Ajax call to API
+    $.ajax({
+      url: queryURL,
+      method: "GET"
+    }).then(function(response) {
+    
+    countryName = response.geonames[0].countryName;
+
+    console.log(countryName);
+    });
+
+})
 
 // D3 map
 "use strict";
@@ -151,65 +181,53 @@ var color = d3.scaleThreshold().domain([
 
 svg.call(tip);
 
-function musicBrainzAPI() {
-    var search = "Pink Floyd"
-    var queryURL = "https://musicbrainz.org/ws/2/artist?query=" + search + "&fmt=json"
-    $.ajax({
-        url: queryURL,
-        method: "GET"
-    })
-        .then(function (response) {
-            MBID = response.artists[0].id
-            queryURL = "http://musicbrainz.org/ws/2/artist/" + MBID + "?inc=label-rels&fmt=json"
-            $.ajax({
-                url: queryURL,
-                method: "GET"
-            })
-                .then(function (response) {
-                    var label = response.relations[0].label.name
-                    console.log(label)
-                })
-        })
-}
-musicBrainzAPI()
+// ---------------------------------------- load web --------------------------------------------
 
 $(document).ready(function (){
-    $("#login").on("click", function () {
+
+    // --------------------- add table of centent to the main display ----------------------------------
+
+
+    // ---------------------------- sign in and sign out operations ----------------------------------------
+    var provider = new firebase.auth.GoogleAuthProvider();
+
+    // when the sign in button is pressed
+    function googleSignin() {
+        firebase.auth()
         var provider = new firebase.auth.GoogleAuthProvider();
-function googleSignin() {
-  firebase.auth()
-  var provider = new firebase.auth.GoogleAuthProvider();
-  
-  firebase.auth().signInWithPopup(provider).then(function(result) {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      var token = result.credential.accessToken;
-      // The signed-in user info.
-      var user = result.user;
-      // ...
-      console.log(token)
-      console.log(user)
-    }).catch(function(error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      // The email of the user's account used.
-      console.log(errorCode)
-      console.log(errorMessage)
-    });
+      
+        firebase.auth().signInWithPopup(provider).then(function(result) {
+            // This gives you a Google Access Token. You can use it to access the Google API.
+            var token = result.credential.accessToken;
+            // The signed-in user info.
+            var user = result.user;
+            // ...
+            console.log(token)
+            console.log(user)
+        }).catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            console.log(errorCode)
+            console.log(errorMessage)
+        });
 
-}
+    }
 
-function googleSignout() {
-    firebase.auth().signOut()
-    
-    .then(function() {
-      console.log('Signout Succesfull')
-    }, function(error) {
-      console.log('Signout Failed')  
-    });
-}
+    // when the signout button is pressed
+    function googleSignout() {
+        firebase.auth().signOut()
+        
+        .then(function() {
+          console.log('Signout Succesfull')
+        }, function(error) {
+          console.log('Signout Failed')  
+        });
+    }
 
-$(document).ready(function() {
+
+    // ------------------------------------ make the map -----------------------------------------------------
 
     // change all population related variable name into singer related name.
 
@@ -253,4 +271,4 @@ $(document).ready(function() {
     //     })).attr('class', 'names').attr('d', path);
     // }
 
-})
+}); 
