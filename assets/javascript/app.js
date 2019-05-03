@@ -68,10 +68,12 @@ var countryPlaylist = {
     // "Monaco": "",
 }
 
-var artist = {}
+var artist = {};
 
 var countryName = "United States";
 var label = "";
+
+var provider = new firebase.auth.GoogleAuthProvider();
 
 // Initialize Firebase
 var config = {
@@ -89,40 +91,124 @@ firebase.initializeApp(config);
 var userTop50 = function () {
     $.ajax({
         url: 'https://api.spotify.com/v1/'
-    })
+    });
 
     $.each(data.artist, function (item, index) {
         var name = item;
         // do an ajax call to spotify to get the info on the artist
         // when done, receive result 
         // artist[result.name] = {"id": ..., "followers": ...}
-    })
+    });
 }
 
 // Function that get label name
 function musicBrainzAPI(name) {
-    var search = name
-    var queryURL = "https://musicbrainz.org/ws/2/artist?query=" + search + "&fmt=json"
+    var search = name;
+    var queryURL = "https://musicbrainz.org/ws/2/artist?query=" + search + "&fmt=json";
 
     $.ajax({
         url: queryURL,
         method: "GET"
     })
     .then(function (response) {
-        MBID = response.artists[0].id
-        queryURL = "http://musicbrainz.org/ws/2/artist/" + MBID + "?inc=label-rels&fmt=json"
+        MBID = response.artists[0].id;
+        queryURL = "http://musicbrainz.org/ws/2/artist/" + MBID + "?inc=label-rels&fmt=json";
 
         $.ajax({
             url: queryURL,
             method: "GET"
         })
         .then(function (response) {
-            label = response.relations[0].label.name
-            console.log(label)
+            label = response.relations[0].label.name;
+            console.log(label);
         });
     });
 }
 
+
+
+// when the sign in button is pressed
+function googleSignin() {
+    firebase.auth();
+    var provider = new firebase.auth.GoogleAuthProvider();
+  
+    firebase.auth().signInWithPopup(provider).then(function(result) {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        var token = result.credential.accessToken;
+        // The signed-in user info.
+        var user = result.user;
+        // ...
+        console.log(token);
+        console.log(user);
+    }).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        console.log(errorCode);
+        console.log(errorMessage);
+    });
+
+}
+
+// when the signout button is pressed
+function googleSignout() {
+    firebase.auth().signOut()
+    .then(function() {
+      console.log('Signout Succesfull');
+    }, function(error) {
+      console.log('Signout Failed');
+    });
+}
+
+var playlistURL = "https://api.spotify.com/v1/playlists/37i9dQZEVXbLRQDuF5jeBp";
+
+// Find hash of URL
+var hash = window.location.hash
+.substring(1)
+.split('&')
+.reduce(function (initial, item) {
+  if (item) {
+    var parts = item.split('=');
+    initial[parts[0]] = decodeURIComponent(parts[1]);
+  }
+  return initial;
+}, {});
+window.location.hash = '';
+
+// Set token
+var accessToken = hash.access_token;
+
+var authorizedURL = 'https://accounts.spotify.com/authorize';
+
+// Replace with your app's client ID and redirect URI
+var clientId = 'ce01ac1e69164952b0ee29ea90b860b6';
+var redirectUri = 'https://luvkylo.github.io/signed/';
+
+// If there is no token, redirect to Spotify authorization
+if (!accessToken) {
+  window.location = authorizedURL + "?client_id=" + clientId + "&redirect_uri=" + redirectUri + "&response_type=token";
+}
+
+// var userTop50 = function() {
+    $.ajax({
+        url: playlistURL,
+        method: "GET",
+        headers: {
+            'Authorization': 'Bearer ' + accessToken
+        },
+        success: function(data) {
+            console.log(data)
+        }
+     });
+    // });
+    //     $.each(data.artist, function(item, index) {
+    //         var name = item;
+    //         // do an ajax call to spotify to get the info on the artist
+    //         // when done, receive result 
+    //         // artist[result.name] = {"id": ..., "followers": ...}
+    //     });
+    // };
 // ---------------------------------------- operations prior web loading ----------------------------------------------
 
 // get Geo location and country name
@@ -157,48 +243,13 @@ navigator.geolocation.getCurrentPosition(function(position) {
 
 // ---------------------------------------- load web --------------------------------------------
 
-$(document).ready(function (){
-
+$(document).ready(function() {
+});
     // --------------------- add table of centent to the main display ----------------------------------
 
 
     // ---------------------------- sign in and sign out operations ----------------------------------------
-    var provider = new firebase.auth.GoogleAuthProvider();
-
-    // when the sign in button is pressed
-    function googleSignin() {
-        firebase.auth()
-        var provider = new firebase.auth.GoogleAuthProvider();
-      
-        firebase.auth().signInWithPopup(provider).then(function(result) {
-            // This gives you a Google Access Token. You can use it to access the Google API.
-            var token = result.credential.accessToken;
-            // The signed-in user info.
-            var user = result.user;
-            // ...
-            console.log(token)
-            console.log(user)
-        }).catch(function(error) {
-            // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            // The email of the user's account used.
-            console.log(errorCode)
-            console.log(errorMessage)
-        });
-
-    }
-
-    // when the signout button is pressed
-    function googleSignout() {
-        firebase.auth().signOut()
-        
-        .then(function() {
-          console.log('Signout Succesfull')
-        }, function(error) {
-          console.log('Signout Failed')  
-        });
-    }
+    
 
 
     // ------------------------------------ make the map -----------------------------------------------------
@@ -270,5 +321,3 @@ $(document).ready(function (){
     //         return a.id !== b.id;
     //     })).attr('class', 'names').attr('d', path);
     // }
-
-}); 
