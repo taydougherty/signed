@@ -219,11 +219,17 @@ function googleSignin() {
 
         var usersRef = firebase.database().ref("users");
         if (user) {
-            console.log(user.uid);
-            usersRef.child(user.uid).set({ 
-                displayName: user.displayName,
-                email: user.email
+            database.ref().once("value", function(data) {
+                var userList = data.val().users;
+                if (userList[user.uid] == undefined) {
+                    usersRef.child(user.uid).set({ 
+                        displayName: user.displayName,
+                        email: user.email,
+                        favorite: []
+                    });
+                }
             });
+            // ------------------------------ add map and display table -----------------------------------
         }
     }).catch(function(error) {
         // Handle Errors here.
@@ -234,9 +240,9 @@ function googleSignin() {
         console.log(errorMessage);
     });
 
-    $(".signin").addClass("invisible");
-    $(".signout").removeClass("invisible");
-    $("fav").removeClass("invisible");
+    $(".signin").addClass("invisible").css("display", "none");
+    $(".signout").removeClass("invisible").css("display", "initial");
+    $("fav").removeClass("invisible").css("display", "initial");
 
 }
 
@@ -249,9 +255,9 @@ function googleSignout() {
     }, function(error) {
     console.log('Signout Failed');
     });
-    $(".signin").removeClass("invisible");
-    $(".signout").addClass("invisible");
-    $("fav").addClass("invisible");
+    $(".signin").removeClass("invisible").css("display", "initial");
+    $(".signout").addClass("invisible").css("display", "none");
+    $("fav").addClass("invisible").css("display", "none");
 }
 
 // ---------------------------------------- load web --------------------------------------------
