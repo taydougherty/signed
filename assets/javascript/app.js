@@ -73,6 +73,9 @@ var artist = {};
 var countryName = "United States";
 var label = "";
 
+var playlistURL = "https://api.spotify.com/v1/playlists/37i9dQZEVXbLRQDuF5jeBp";
+var artistURL = "https://api.spotify.com/v1/artists/";
+
 // Initialize Firebase
 var config = {
   apiKey: "AIzaSyBGEi2FNlzHCBjl6Oit1qTAjPQ7oKSTER0",
@@ -83,24 +86,51 @@ var config = {
   messagingSenderId: "772881617679"
 };
 
-var userEmail = "";
-
 firebase.initializeApp(config);
-var database = firebase.database();
 
 // --------------------------------------------- Functions --------------------------------------------------
-var userTop50 = function () {
+// var userTop50 = function() {
+// ajax call for playlist
     $.ajax({
-        url: 'https://api.spotify.com/v1/'
-    });
+        url: playlistURL,
+        method: "GET",
+        headers: {
+            'Authorization': 'Bearer ' + accessToken
+        },
+        success: function(data) {
+            var response = data.tracks.items[0].track;
 
-    $.each(data.artist, function (item, index) {
-        var name = item;
-        // do an ajax call to spotify to get the info on the artist
-        // when done, receive result 
-        // artist[result.name] = {"id": ..., "followers": ...}
-    });
-}
+            console.log(data)
+            var artistID = response.artists[0].id;
+            var artistName = response.artists[0].name;
+            var trackTitle = response.track.name;
+            var trackNum = response.track.track_number;
+            console.log(artistID);
+            console.log(artistName);
+            console.log(trackTitle);
+            console.log(trackNum);
+        }
+     });  
+
+// ajax call for artist
+        $.ajax({
+            url: artistURL,
+            method: "GET",
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            },
+            success: function(data) {
+                console.log(data)
+            }
+        });
+    // });
+    //     $.each(data.artist, function(item, index) {
+    //         var name = item;
+    //         // do an ajax call to spotify to get the info on the artist
+    //         // when done, receive result 
+    //         // artist[result.name] = {"id": ..., "followers": ...}
+    //     });
+    // };
 
 // Function that get label name
 function musicBrainzAPI(name) {
@@ -125,9 +155,7 @@ function musicBrainzAPI(name) {
         });
     });
 }
-
-var playlistURL = "https://api.spotify.com/v1/playlists/37i9dQZEVXbLRQDuF5jeBp";
-
+// ---------------------------------------- Spotify Authentication ----------------------------------------------
 // Find hash of URL
 var hash = window.location.hash
 .substring(1)
@@ -155,25 +183,6 @@ if (!accessToken) {
   window.location = authorizedURL + "?client_id=" + clientId + "&redirect_uri=" + redirectUri + "&response_type=token";
 }
 
-// var userTop50 = function() {
-    $.ajax({
-        url: playlistURL,
-        method: "GET",
-        headers: {
-            'Authorization': 'Bearer ' + accessToken
-        },
-        success: function(data) {
-            console.log(data)
-        }
-     });
-    // });
-    //     $.each(data.artist, function(item, index) {
-    //         var name = item;
-    //         // do an ajax call to spotify to get the info on the artist
-    //         // when done, receive result 
-    //         // artist[result.name] = {"id": ..., "followers": ...}
-    //     });
-    // };
 // ---------------------------------------- operations prior web loading ----------------------------------------------
 
 // get Geo location and country name
@@ -205,65 +214,45 @@ navigator.geolocation.getCurrentPosition(function(position) {
 
 })
 
-// when the sign in button is pressed
-function googleSignin() {
-    firebase.auth();
-    var provider = new firebase.auth.GoogleAuthProvider();
-
-    firebase.auth().signInWithPopup(provider).then(function(result) {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        // var token = result.credential.accessToken;
-        // The signed-in user info.
-        var user = result.user;
-        // ...
-
-        var usersRef = firebase.database().ref("users");
-        if (user) {
-            database.ref().once("value", function(data) {
-                var userList = data.val().users;
-                if (userList[user.uid] == undefined) {
-                    usersRef.child(user.uid).set({ 
-                        displayName: user.displayName,
-                        email: user.email,
-                        favorite: []
-                    });
-                }
-            });
-            // ------------------------------ add map and display table -----------------------------------
-        }
-    }).catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // The email of the user's account used.
-        console.log(errorCode);
-        console.log(errorMessage);
-    });
-
-    $(".signin").addClass("invisible").css("display", "none");
-    $(".signout").removeClass("invisible").css("display", "initial");
-    $("fav").removeClass("invisible").css("display", "initial");
-
-}
-
-// when the signout button is pressed
-function googleSignout() {
-    firebase.auth().signOut()
-    
-    .then(function() {
-    console.log('Signout Succesfull');
-    }, function(error) {
-    console.log('Signout Failed');
-    });
-    $(".signin").removeClass("invisible").css("display", "initial");
-    $(".signout").addClass("invisible").css("display", "none");
-    $("fav").addClass("invisible").css("display", "none");
-}
 
 // ---------------------------------------- load web --------------------------------------------
 
 $(document).ready(function() {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    
+    // when the sign in button is pressed
+    function googleSignin() {
+        firebase.auth();
+        var provider = new firebase.auth.GoogleAuthProvider();
+    
+        firebase.auth().signInWithPopup(provider).then(function(result) {
+            // This gives you a Google Access Token. You can use it to access the Google API.
+            var token = result.credential.accessToken;
+            // The signed-in user info.
+            var user = result.user;
+            // ...
+            console.log(token);
+            console.log(user);
+        }).catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            console.log(errorCode);
+            console.log(errorMessage);
+        });
 
+    }
+
+    // when the signout button is pressed
+    function googleSignout() {
+        firebase.auth().signOut()
+        .then(function() {
+        console.log('Signout Succesfull');
+        }, function(error) {
+        console.log('Signout Failed');
+        });
+    }
 
     // --------------------- add table of centent to the main display ----------------------------------
 
